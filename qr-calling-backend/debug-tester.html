@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Calling Debug Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .test-result {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            font-family: monospace;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-group {
+            margin: 1rem 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 QR Calling Debug Tool</h1>
+            <p>Comprehensive system diagnostics</p>
+        </div>
+
+        <div class="content">
+            <!-- Backend Connection Test -->
+            <div class="test-section">
+                <h3>1. Backend Connection Test</h3>
+                <button class="btn" onclick="testBackendConnection()">Test Backend Connection</button>
+                <div id="backendResult"></div>
+            </div>
+
+            <!-- User Creation Test -->
+            <div class="test-section">
+                <h3>2. Create Test User</h3>
+                <div class="input-group">
+                    <label>Email:</label>
+                    <input type="email" id="testEmail" value="testuser@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password:</label>
+                    <input type="password" id="testPassword" value="password123">
+                </div>
+                <div class="input-group">
+                    <label>Name:</label>
+                    <input type="text" id="testName" value="Test User">
+                </div>
+                <div class="input-group">
+                    <label>Phone:</label>
+                    <input type="text" id="testPhone" value="+1234567890">
+                </div>
+                <button class="btn" onclick="createTestUser()">Create Test User</button>
+                <div id="userResult"></div>
+            </div>
+
+            <!-- Login Test -->
+            <div class="test-section">
+                <h3>3. Login Test</h3>
+                <button class="btn" onclick="testLogin()">Test Login</button>
+                <div id="loginResult"></div>
+            </div>
+
+            <!-- QR Code Generation Test -->
+            <div class="test-section">
+                <h3>4. QR Code Generation</h3>
+                <div class="input-group">
+                    <label>QR Code Name:</label>
+                    <input type="text" id="qrName" value="Test QR Code">
+                </div>
+                <button class="btn" onclick="generateQRCode()">Generate QR Code</button>
+                <div id="qrResult"></div>
+            </div>
+
+            <!-- Call Initiation Test -->
+            <div class="test-section">
+                <h3>5. Call Initiation Test</h3>
+                <div class="input-group">
+                    <label>QR ID (from step 4):</label>
+                    <input type="text" id="testQrId" placeholder="Enter QR ID from above">
+                </div>
+                <button class="btn" onclick="testCallInitiation()">Test Call Initiation</button>
+                <div id="callResult"></div>
+            </div>
+
+            <!-- Agora Token Test -->
+            <div class="test-section">
+                <h3>6. Agora Configuration Test</h3>
+                <button class="btn" onclick="testAgoraConfig()">Test Agora Config</button>
+                <div id="agoraResult"></div>
+            </div>
+
+            <!-- Socket.IO Test -->
+            <div class="test-section">
+                <h3>7. Socket.IO Connection Test</h3>
+                <button class="btn" onclick="testSocketConnection()">Test Socket Connection</button>
+                <div id="socketResult"></div>
+            </div>
+
+            <!-- Complete Flow Test -->
+            <div class="test-section">
+                <h3>8. Complete Flow Test</h3>
+                <button class="btn" onclick="runCompleteTest()">Run Complete Test</button>
+                <div id="completeResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let testToken = null;
+        let testQrId = null;
+        let socket = null;
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result info"><span class="loading"></span>${message}</div>`;
+        }
+
+        async function testBackendConnection() {
+            showLoading('backendResult', 'Testing backend connection...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('backendResult', `✅ Backend connected successfully!\nStatus: ${data.status}\nUptime: ${Math.floor(data.uptime)}s`, 'success');
+                } else {
+                    showResult('backendResult', `❌ Backend responded with error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('backendResult', `❌ Cannot connect to backend: ${error.message}\n\nMake sure your backend server is running on http://localhost:5000`, 'error');
+            }
+        }
+
+        async function createTestUser() {
+            showLoading('userResult', 'Creating test user...');
+            
+            const userData = {
+                email: document.getElementById('testEmail').value,
+                password: document.getElementById('testPassword').value,
+                name: document.getElementById('testName').value,
+                phone: document.getElementById('testPhone').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    testToken = data.token;
+                    showResult('userResult', `✅ User created successfully!\nUser ID: ${data.user.userId}\nToken: ${data.token.substring(0, 20)}...`, 'success');
+                } else {
+                    if (response.status === 409) {
+                        showResult('userResult', `⚠️ User already exists. This is OK for testing.\nTrying to login instead...`, 'warning');
+                        setTimeout(testLogin, 1000);
+                    } else {
+                        showResult('userResult', `❌ Failed to create user: ${data.error}`, 'error');
+                    }
+                }
+            } catch (error) {
+                showResult('userResult', `❌ Error creating user: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            showLoading('loginResult', 'Testing login...');
+            
+            const loginData = {
+                email: document.getElementById('testEmail').value,
+                password: document.getElementById('testPassword').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    testToken = data.token;
+                    showResult('loginResult', `✅ Login successful!\nUser: ${data.user.name}\nToken: ${data.token.substring(0, 20)}...`, 'success');
+                } else {
+                    showResult('loginResult', `❌ Login failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('loginResult', `❌ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        async function generateQRCode() {
+            if (!testToken) {
+                showResult('qrResult', '❌ Please login first (run step 3)', 'error');
+                return;
+            }
+
+            showLoading('qrResult', 'Generating QR code...');
+            
+            const qrData = {
+                name: document.getElementById('qrName').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/qr/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify(qrData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    testQrId = data.qrId;
+                    document.getElementById('testQrId').value = data.qrId;
+                    showResult('qrResult', `✅ QR Code generated successfully!\nQR ID: ${data.qrId}\nURL: ${data.qrUrl}`, 'success');
+                } else {
+                    showResult('qrResult', `❌ Failed to generate QR code: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('qrResult', `❌ QR generation error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCallInitiation() {
+            const qrId = document.getElementById('testQrId').value;
+            
+            if (!qrId) {
+                showResult('callResult', '❌ Please enter QR ID from step 4', 'error');
+                return;
+            }
+
+            showLoading('callResult', 'Testing call initiation...');
+            
+            const callData = {
+                qrId: qrId,
+                callType: 'audio',
+                callerInfo: {
+                    name: 'Debug Tester',
+                    phone: '+1234567890',
+                    type: 'qr_scan'
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/calls/initiate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(callData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResult('callResult', `✅ Call initiated successfully!\nCall ID: ${data.callId}\nChannel: ${data.channelName}\nCaller UID: ${data.callerUID}\nApp ID: ${data.appId}\nToken: ${data.token.substring(0, 30)}...`, 'success');
+                } else {
+                    showResult('callResult', `❌ Call initiation failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('callResult', `❌ Call initiation error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAgoraConfig() {
+            if (!testToken) {
+                showResult('agoraResult', '❌ Please login first', 'error');
+                return;
+            }
+
+            showLoading('agoraResult', 'Testing Agora configuration...');
+            
+            const tokenData = {
+                channelName: 'test_channel_debug',
+                uid: 'debug_user_001',
+                role: 1
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/agora/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${testToken}`
+                    },
+                    body: JSON.stringify(tokenData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResult('agoraResult', `✅ Agora configuration working!\nApp ID: ${data.appId}\nToken: ${data.token.substring(0, 30)}...\nToken Length: ${data.token.length}`, 'success');
+                } else {
+                    showResult('agoraResult', `❌ Agora token generation failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('agoraResult', `❌ Agora test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSocketConnection() {
+            showLoading('socketResult', 'Testing Socket.IO connection...');
+            
+            try {
+                if (socket) {
+                    socket.disconnect();
+                }
+
+                socket = io(API_BASE);
+                
+                socket.on('connect', () => {
+                    showResult('socketResult', `✅ Socket.IO connected successfully!\nSocket ID: ${socket.id}`, 'success');
+                });
+
+                socket.on('connect_error', (error) => {
+                    showResult('socketResult', `❌ Socket.IO connection failed: ${error.message}`, 'error');
+                });
+
+                // Test timeout
+                setTimeout(() => {
+                    if (!socket.connected) {
+                        showResult('socketResult', '❌ Socket.IO connection timeout', 'error');
+                    }
+                }, 5000);
+
+            } catch (error) {
+                showResult('socketResult', `❌ Socket.IO error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runCompleteTest() {
+            showLoading('completeResult', 'Running complete system test...');
+            
+            let results = [];
+            
+            // Test 1: Backend
+            try {
+                const healthResponse = await fetch(`${API_BASE}/health`);
+                if (healthResponse.ok) {
+                    results.push('✅ Backend connection: OK');
+                } else {
+                    results.push('❌ Backend connection: FAILED');
+                    showResult('completeResult', results.join('\n'), 'error');
+                    return;
+                }
+            } catch (error) {
+                results.push('❌ Backend connection: FAILED - ' + error.message);
+                showResult('completeResult', results.join('\n'), 'error');
+                return;
+            }
+
+            // Test 2: Authentication
+            try {
+                const loginResponse = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('testEmail').value,
+                        password: document.getElementById('testPassword').value
+                    })
+                });
+                const loginData = await loginResponse.json();
+                if (loginData.success) {
+                    testToken = loginData.token;
+                    results.push('✅ Authentication: OK');
+                } else {
+                    results.push('❌ Authentication: FAILED - ' + loginData.error);
+                }
+            } catch (error) {
+                results.push('❌ Authentication: FAILED - ' + error.message);
+            }
+
+            // Test 3: QR Generation
+            if (testToken) {
+                try {
+                    const qrResponse = await fetch(`${API_BASE}/api/qr/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${testToken}`
+                        },
+                        body: JSON.stringify({ name: 'Complete Test QR' })
+                    });
+                    const qrData = await qrResponse.json();
+                    if (qrData.success) {
+                        testQrId = qrData.qrId;
+                        results.push('✅ QR Generation: OK');
+                    } else {
+                        results.push('❌ QR Generation: FAILED - ' + qrData.error);
+                    }
+                } catch (error) {
+                    results.push('❌ QR Generation: FAILED - ' + error.message);
+                }
+            }
+
+            // Test 4: Call Initiation
+            if (testQrId) {
+                try {
+                    const callResponse = await fetch(`${API_BASE}/api/calls/initiate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            qrId: testQrId,
+                            callType: 'audio',
+                            callerInfo: { name: 'Complete Tester' }
+                        })
+                    });
+                    const callData = await callResponse.json();
+                    if (callData.success) {
+                        results.push('✅ Call Initiation: OK');
+                        results.push(`📞 Call ID: ${callData.callId}`);
+                        results.push(`🎯 Channel: ${callData.channelName}`);
+                    } else {
+                        results.push('❌ Call Initiation: FAILED - ' + callData.error);
+                    }
+                } catch (error) {
+                    results.push('❌ Call Initiation: FAILED - ' + error.message);
+                }
+            }
+
+            // Test 5: Agora Token
+            if (testToken) {
+                try {
+                    const agoraResponse = await fetch(`${API_BASE}/api/agora/token`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${testToken}`
+                        },
+                        body: JSON.stringify({
+                            channelName: 'complete_test',
+                            uid: 'test_user',
+                            role: 1
+                        })
+                    });
+                    const agoraData = await agoraResponse.json();
+                    if (agoraData.success) {
+                        results.push('✅ Agora Token: OK');
+                    } else {
+                        results.push('❌ Agora Token: FAILED - ' + agoraData.error);
+                    }
+                } catch (error) {
+                    results.push('❌ Agora Token: FAILED - ' + error.message);
+                }
+            }
+
+            // Display results
+            const hasErrors = results.some(r => r.includes('❌'));
+            showResult('completeResult', results.join('\n'), hasErrors ? 'error' : 'success');
+
+            if (!hasErrors) {
+                showResult('completeResult', results.join('\n') + '\n\n🎉 All tests passed! Your system should work correctly.', 'success');
+            } else {
+                showResult('completeResult', results.join('\n') + '\n\n⚠️ Some tests failed. Please fix the issues above before testing the calling interface.', 'error');
+            }
+        }
+
+        // Auto-run backend test on load
+        window.addEventListener('load', () => {
+            setTimeout(testBackendConnection, 1000);
+        });
+    </script>
+</body>
+</html>

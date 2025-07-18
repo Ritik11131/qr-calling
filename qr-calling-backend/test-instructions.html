@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Voice Calling - Testing Instructions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #34495e;
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .file-structure {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .column {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .column h4 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .url-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 QR Voice Calling System</h1>
+            <p>Complete Testing Guide for Single Device Setup</p>
+        </div>
+
+        <div class="content">
+            <!-- Prerequisites Section -->
+            <div class="section">
+                <h2>📋 Prerequisites</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Backend Server Running:</strong> Make sure your Node.js backend is running on <code>http://localhost:5000</code>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Database Connected:</strong> Ensure MongoDB is connected and accessible
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Agora Credentials:</strong> Verify your Agora App ID and Certificate are properly configured
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>HTTPS/Microphone Access:</strong> For microphone access, you may need to serve files over HTTPS or use localhost
+                </div>
+            </div>
+
+            <!-- File Setup Section -->
+            <div class="section">
+                <h2>📁 File Setup</h2>
+                
+                <p>Create these three HTML files in your project directory:</p>
+                
+                <div class="file-structure">
+project-folder/
+├── caller.html          (Anonymous caller interface)
+├── receiver.html        (QR owner interface)
+├── test-instructions.html (This guide)
+└── backend/             (Your existing backend code)
+                </div>
+
+                <div class="info">
+                    <strong>💡 Tip:</strong> You can serve these files using any local server like Live Server extension in VS Code, or Python's built-in server: <code>python -m http.server 8000</code>
+                </div>
+            </div>
+
+            <!-- Testing Process Section -->
+            <div class="section">
+                <h2>🧪 Testing Process on Single Device</h2>
+
+                <h3>Step 1: Prepare User Account & QR Code</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Create a test user account</strong> using your backend API or database directly:
+                </div>
+
+                <div class="code">
+POST http://localhost:5000/api/auth/register
+{
+  "name": "Test Receiver",
+  "email": "receiver@test.com",
+  "phone": "+1234567890",
+  "password": "password123"
+}
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Generate a QR code</strong> for the test user:
+                </div>
+
+                <div class="code">
+POST http://localhost:5000/api/qr/generate
+Authorization: Bearer YOUR_JWT_TOKEN
+{
+  "name": "Test QR Code"
+}
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Important:</strong> Note down the <code>qrId</code> from the response - you'll need this for testing!
+                </div>
+
+                <h3>Step 2: Open Both Interfaces</h3>
+
+                <div class="two-column">
+                    <div class="column">
+                        <h4>🔵 Receiver Window</h4>
+                        <div class="url-box">
+                            http://localhost:8000/receiver.html
+                        </div>
+                        <p>This represents the QR code owner who will receive the call</p>
+                    </div>
+                    
+                    <div class="column">
+                        <h4>🟢 Caller Window</h4>
+                        <div class="url-box">
+                            http://localhost:8000/caller.html
+                        </div>
+                        <p>This represents the anonymous person who scanned the QR code</p>
+                    </div>
+                </div>
+
+                <div class="info">
+                    <strong>💡 Pro Tip:</strong> Use different browser windows or incognito/private windows to simulate different users. You can also use different browsers (Chrome + Firefox).
+                </div>
+
+                <h3>Step 3: Login as Receiver</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    In the <strong>Receiver Window</strong>, login with your test account:
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Email: <code>receiver@test.com</code></li>
+                        <li>Password: <code>password123</code></li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    After successful login, you should see the "Ready to Receive" screen with a pulsing phone icon
+                </div>
+
+                <h3>Step 4: Initiate Call from Caller</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    In the <strong>Caller Window</strong>, enter the QR ID you noted earlier
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Optionally fill in caller information (name, phone)
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Click "Start Call" button
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    The caller interface should show "Calling..." status
+                </div>
+
+                <h3>Step 5: Answer Call on Receiver</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    The <strong>Receiver Window</strong> should automatically show an incoming call notification
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    You should hear a ringtone sound (if audio is enabled)
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Click the green "Answer" button to accept the call
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    Both windows should now show "Connected" status with call timer
+                </div>
+
+                <h3>Step 6: Test Voice Communication</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Grant microphone permissions</strong> when prompted in both windows
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Test speaking:</strong> Speak into one window and listen from the other
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Test mute functionality:</strong> Click the microphone button to mute/unmute
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Monitor audio indicators:</strong> You should see animated audio bars when connected
+                </div>
+
+                <h3>Step 7: End Call Testing</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Test ending call from either the caller or receiver side
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Verify that both interfaces return to their initial states
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Check that call duration was recorded properly
+                </div>
+            </div>
+
+            <!-- Troubleshooting Section -->
+            <div class="section">
+                <h2>🔧 Troubleshooting</h2>
+
+                <h3>Common Issues & Solutions</h3>
+
+                <div class="warning">
+                    <strong>🚫 Microphone Access Denied</strong>
+                    <ul>
+                        <li>Ensure you're using HTTPS or localhost</li>
+                        <li>Check browser permissions for microphone access</li>
+                        <li>Try refreshing the page and allowing permissions</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>🚫 Call Not Connecting</strong>
+                    <ul>
+                        <li>Verify backend server is running on port 5000</li>
+                        <li>Check browser console for error messages</li>
+                        <li>Ensure Agora credentials are properly configured</li>
+                        <li>Verify the QR ID exists and is active</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>🚫 No Audio</strong>
+                    <ul>
+                        <li>Check if both users have granted microphone permissions</li>
+                        <li>Verify Agora token generation is working</li>
+                        <li>Test with different browsers</li>
+                        <li>Check system audio settings</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>🚫 Socket Connection Issues</strong>
+                    <ul>
+                        <li>Ensure Socket.IO server is running</li>
+                        <li>Check CORS settings in backend</li>
+                        <li>Verify WebSocket connections in browser dev tools</li>
+                    </ul>
+                </div>
+
+                <h3>Debug Tools</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Browser Console:</strong> Open Developer Tools (F12) to see error messages and logs
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Network Tab:</strong> Monitor API calls and responses
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Backend Logs:</strong> Check your Node.js server console for errors
+                </div>
+            </div>
+
+            <!-- Advanced Testing Section -->
+            <div class="section">
+                <h2>🚀 Advanced Testing Scenarios</h2>
+
+                <h3>Multiple QR Codes</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Create multiple QR codes for the same user and test calling different ones
+                </div>
+
+                <h3>Call Rejection</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Test rejecting incoming calls using the red reject button
+                </div>
+
+                <h3>Call History</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Make several test calls and verify they appear in call history via API
+                </div>
+
+                <div class="code">
+GET http://localhost:5000/api/calls/history
+Authorization: Bearer YOUR_JWT_TOKEN
+                </div>
+
+                <h3>Concurrent Calls</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Test what happens when multiple callers try to call the same QR code simultaneously
+                </div>
+            </div>
+
+            <!-- Success Indicators Section -->
+            <div class="section">
+                <h2>✅ Success Indicators</h2>
+
+                <div class="success">
+                    <strong>🎉 Your system is working correctly if:</strong>
+                    <ul>
+                        <li>✅ Anonymous caller can initiate calls without registration</li>
+                        <li>✅ QR owner receives real-time call notifications</li>
+                        <li>✅ Both parties can hear each other clearly</li>
+                        <li>✅ Mute/unmute functionality works properly</li>
+                        <li>✅ Call timer displays accurate duration</li>
+                        <li>✅ Calls can be ended from either side</li>
+                        <li>✅ Call history is properly recorded</li>
+                        <li>✅ UI is responsive and professional-looking</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Production Notes Section -->
+            <div class="section">
+                <h2>🌐 Production Deployment Notes</h2>
+
+                <div class="info">
+                    <strong>📝 Before going live:</strong>
+                    <ul>
+                        <li>🔒 Implement proper HTTPS for microphone access</li>
+                        <li>🔧 Update API endpoints from localhost to your domain</li>
+                        <li>🎨 Customize branding and colors to match your needs</li>
+                        <li>📱 Test on various mobile devices and browsers</li>
+                        <li>🔔 Implement proper push notifications for mobile</li>
+                        <li>📊 Add analytics and error tracking</li>
+                        <li>🛡️ Implement rate limiting and security measures</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
