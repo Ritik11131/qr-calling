@@ -1,0 +1,1 @@
+mongo start: ssh -L 37017:32.42.8.166:27017 -i C:\Users\Asus\Downloads\balin_rsa balin-user@103.20.212.18
