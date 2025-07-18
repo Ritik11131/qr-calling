@@ -41,9 +41,6 @@ Thumbs.db
 # Uploads
 uploads/
 
-# Firebase
-config/firebase-service-account.json
-
 # Database
 *.db
 *.sqlite
