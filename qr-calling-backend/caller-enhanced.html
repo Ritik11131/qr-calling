@@ -60,6 +60,21 @@
             font-size: 0.9rem;
         }
 
+        .qr-auto-filled {
+            background: #d1edff;
+            color: #0c5460;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            border: 1px solid #bee5eb;
+        }
+
+        .qr-auto-filled .icon {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
         .debug-panel {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -113,6 +128,11 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        .input-group input.auto-filled {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
         .input-group label {
             position: absolute;
             top: 1rem;
@@ -130,6 +150,10 @@
             color: #667eea;
             background: white;
             padding: 0 0.5rem;
+        }
+
+        .input-group input.auto-filled + label {
+            color: #28a745;
         }
 
         .call-interface {
@@ -263,6 +287,17 @@
             transform: none;
         }
 
+        .primary-btn.ready-to-call {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
+            50% { box-shadow: 0 8px 35px rgba(40, 167, 69, 0.6); }
+            100% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
+        }
+
         .loading {
             display: inline-block;
             width: 20px;
@@ -342,6 +377,16 @@
             font-size: 0.8rem;
         }
 
+        .quick-call-hint {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            border: 1px solid #ffeaa7;
+        }
+
         @media (max-width: 480px) {
             .container {
                 margin: 1rem;
@@ -371,6 +416,18 @@
             <div class="header">
                 <h1>🎯 Voice Call</h1>
                 <p>Enter QR code to start calling</p>
+            </div>
+
+            <!-- Auto-filled notification -->
+            <div id="qrAutoFilled" class="qr-auto-filled" style="display: none;">
+                <span class="icon">✅</span>
+                <strong>QR Code Auto-Filled!</strong><br>
+                Ready to call - just click the button below
+            </div>
+
+            <!-- Quick call hint -->
+            <div id="quickCallHint" class="quick-call-hint" style="display: none;">
+                <strong>💡 Quick Call:</strong> QR code detected! You can start calling immediately.
             </div>
 
             <div id="errorMessage" class="error-message" style="display: none;"></div>
@@ -437,6 +494,7 @@
                 this.isMuted = false;
                 this.isCallActive = false;
                 this.statusPollingInterval = null;
+                this.isQrAutoFilled = false;
                 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -473,7 +531,9 @@
                     muteBtn: document.getElementById('muteBtn'),
                     endCallBtn: document.getElementById('endCallBtn'),
                     errorMessage: document.getElementById('errorMessage'),
-                    successMessage: document.getElementById('successMessage')
+                    successMessage: document.getElementById('successMessage'),
+                    qrAutoFilled: document.getElementById('qrAutoFilled'),
+                    quickCallHint: document.getElementById('quickCallHint')
                 };
             }
 
@@ -485,6 +545,11 @@
                 // Enter key support
                 this.elements.qrIdInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.initiateCall();
+                });
+
+                // QR input change handler
+                this.elements.qrIdInput.addEventListener('input', () => {
+                    this.updateCallButtonState();
                 });
             }
 
@@ -533,9 +598,49 @@
             checkURLParams() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const qrId = urlParams.get('qr');
+                
                 if (qrId) {
                     this.elements.qrIdInput.value = qrId;
-                    this.debugLog(`📱 QR ID from URL: ${qrId}`);
+                    this.elements.qrIdInput.classList.add('auto-filled');
+                    this.isQrAutoFilled = true;
+                    
+                    // Show auto-filled notification
+                    this.elements.qrAutoFilled.style.display = 'block';
+                    this.elements.quickCallHint.style.display = 'block';
+                    
+                    // Update button state
+                    this.updateCallButtonState();
+                    
+                    this.debugLog(`📱 QR ID auto-filled from URL: ${qrId}`, 'success');
+                    
+                    // Auto-focus on name input for better UX
+                    setTimeout(() => {
+                        this.elements.callerNameInput.focus();
+                        this.elements.callerNameInput.select();
+                    }, 500);
+                    
+                    // Hide notifications after 5 seconds
+                    setTimeout(() => {
+                        this.elements.qrAutoFilled.style.display = 'none';
+                        this.elements.quickCallHint.style.display = 'none';
+                    }, 5000);
+                } else {
+                    this.debugLog('📱 No QR ID in URL - manual entry required');
+                }
+            }
+
+            updateCallButtonState() {
+                const hasQrId = this.elements.qrIdInput.value.trim().length > 0;
+                
+                if (hasQrId && this.isQrAutoFilled) {
+                    this.elements.initiateCallBtn.classList.add('ready-to-call');
+                    this.elements.initiateCallBtn.innerHTML = '🚀 Quick Call - Ready!';
+                } else if (hasQrId) {
+                    this.elements.initiateCallBtn.classList.remove('ready-to-call');
+                    this.elements.initiateCallBtn.innerHTML = '📞 Start Call';
+                } else {
+                    this.elements.initiateCallBtn.classList.remove('ready-to-call');
+                    this.elements.initiateCallBtn.innerHTML = '📞 Start Call';
                 }
             }
 
@@ -624,7 +729,7 @@
                     this.showError('Network error. Please try again.');
                 } finally {
                     this.elements.initiateCallBtn.disabled = false;
-                    this.elements.initiateCallBtn.innerHTML = '📞 Start Call';
+                    this.updateCallButtonState();
                 }
             }
 
