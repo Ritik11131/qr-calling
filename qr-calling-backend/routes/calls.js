@@ -49,9 +49,11 @@ router.post('/initiate',auth, callRateLimit, async (req, res) => {
     qrCode.lastScanned = new Date();
     await qrCode.save();
 
-    // Generate Agora tokens
-    const callerToken = generateAgoraToken(channelName, callerId);
-    const receiverToken = generateAgoraToken(channelName, qrCode.ownerId);
+    // Generate Agora tokens using consistent UIDs
+    const callerUID = 'user_001'; // Use consistent UID for caller
+    const receiverUID = 'user_002'; // Use consistent UID for receiver
+    const callerToken = generateAgoraToken(channelName, callerUID);
+    const receiverToken = generateAgoraToken(channelName, receiverUID);
 
     // Send push notification to receiver
     const caller = await User.findOne({ userId: callerId });
@@ -72,6 +74,7 @@ router.post('/initiate',auth, callRateLimit, async (req, res) => {
       callId,
       channelName,
       token: callerToken,
+      appId: process.env.AGORA_APP_ID,
       receiver: {
         name: receiver.name,
         avatar: receiver.avatar

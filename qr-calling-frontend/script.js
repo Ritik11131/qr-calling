@@ -210,7 +210,7 @@ class QRCallingApp {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyXzAwMSIsImlhdCI6MTc1Mjc1MzIzMCwiZXhwIjoxNzUzMzU4MDMwfQ.oOlEOYkPXCL8yKXG4UX2iul8Nkvky23GQcfgoGRxXH0`
                 },
-                body: JSON.stringify({ qrId, callType: 'audio' })
+                body: JSON.stringify({ qrId, callType: 'video' })
             });
 
             if (!response.ok) {
@@ -227,8 +227,9 @@ class QRCallingApp {
             this.showCallView();
             this.updateCallInfo(callData.receiver);
             
-            // Join Agora channel
-            await this.joinAgoraChannel(callData.channelName, callData.token);
+            // Join Agora channel (use a simpler UID format)
+            const uid = 'user_001'; // Use a simpler UID instead of callId
+            await this.joinAgoraChannel(callData.channelName, callData.token, uid, callData.appId);
             
         } catch (error) {
             console.error('Error initiating call:', error);
@@ -236,10 +237,10 @@ class QRCallingApp {
         }
     }
 
-    async joinAgoraChannel(channelName, token) {
+    async joinAgoraChannel(channelName, token, uid, appId) {
         try {
             // Join channel
-            await this.agoraClient.join('a60ab93b684d4fd5a25690781e71af72', channelName, token, 212);
+            await this.agoraClient.join(appId, channelName, token, uid);
             
             // Create and publish local tracks
             this.localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
@@ -265,11 +266,11 @@ class QRCallingApp {
         try {
             if (this.currentCall) {
                 // End call on server
-                await fetch(`/api/calls/${this.currentCall.callId}/end`, {
+                await fetch(`http://localhost:5000/api/calls/${this.currentCall.callId}/end`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyXzAwMSIsImlhdCI6MTc1Mjc1MzIzMCwiZXhwIjoxNzUzMzU4MDMwfQ.oOlEOYkPXCL8yKXG4UX2iul8Nkvky23GQcfgoGRxXH0`
                     },
                     body: JSON.stringify({ duration: this.getCallDuration() })
                 });
@@ -353,11 +354,7 @@ class QRCallingApp {
 
     showManualInput() {
         console.log('ok');
-        
-        const qrId = prompt('Enter QR Code ID:');
-        if (qrId) {
-            this.initiateCall(qrId);
-        }
+        this.initiateCall('qr_001');
     }
 
     showScannerView() {
