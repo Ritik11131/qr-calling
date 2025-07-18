@@ -227,6 +227,9 @@ class QRCallingApp {
             this.showCallView();
             this.updateCallInfo(callData.receiver);
             
+            // Show notification status
+            this.updateNotificationStatus(callData.notification);
+            
             // Join Agora channel (use a simpler UID format)
             const uid = 'user_001'; // Use a simpler UID instead of callId
             await this.joinAgoraChannel(callData.channelName, callData.token, uid, callData.appId);
@@ -374,6 +377,31 @@ class QRCallingApp {
 
     updateCallStatus(status) {
         document.getElementById('call-status').textContent = status;
+    }
+
+    updateNotificationStatus(notification) {
+        // Update call status to show notification info
+        let notificationText = '';
+        if (notification && notification.sent) {
+            notificationText = `📱 Notification sent to ${notification.successCount} device(s)`;
+        } else if (notification && notification.error) {
+            notificationText = `❌ Notification failed: ${notification.error}`;
+        } else {
+            notificationText = `⚠️ Notification not sent`;
+        }
+        
+        // Display notification status briefly
+        const callStatus = document.getElementById('call-status');
+        const originalStatus = callStatus.textContent;
+        callStatus.textContent = notificationText;
+        
+        // Show notification status for 3 seconds, then revert
+        setTimeout(() => {
+            callStatus.textContent = originalStatus;
+        }, 3000);
+        
+        // Log notification details for debugging
+        console.log('📱 Push Notification Status:', notification);
     }
 
     getCallDuration() {

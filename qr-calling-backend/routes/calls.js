@@ -57,17 +57,21 @@ router.post('/initiate',auth, callRateLimit, async (req, res) => {
 
     // Send push notification to receiver
     const caller = await User.findOne({ userId: callerId });
-    // await sendPushNotification(receiver.deviceTokens, {
-    //   title: 'Incoming Call',
-    //   body: `${caller.name} is calling you`,
-    //   data: {
-    //     callId,
-    //     callerId,
-    //     channelName,
-    //     callType,
-    //     token: receiverToken
-    //   }
-    // });
+    const notificationPayload = {
+      title: 'Incoming Call',
+      body: `${caller?.name || 'Someone'} is calling you`,
+      data: {
+        callId,
+        callerId,
+        channelName,
+        callType,
+        token: receiverToken
+      }
+    };
+    
+    // Send notification with mock device tokens if receiver doesn't have any
+    const deviceTokens = receiver.deviceTokens || ['mock_device_token'];
+    const notificationResult = await sendPushNotification(deviceTokens, notificationPayload);
 
     res.json({
       success: true,
@@ -78,6 +82,12 @@ router.post('/initiate',auth, callRateLimit, async (req, res) => {
       receiver: {
         name: receiver.name,
         avatar: receiver.avatar
+      },
+      notification: {
+        sent: notificationResult.successCount > 0,
+        successCount: notificationResult.successCount,
+        failureCount: notificationResult.failureCount,
+        error: notificationResult.error || null
       }
     });
   } catch (error) {
