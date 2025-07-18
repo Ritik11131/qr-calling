@@ -11,6 +11,7 @@ const qrRoutes = require('./routes/qr');
 const callRoutes = require('./routes/calls');
 const notificationRoutes = require('./routes/notifications');
 const agoraRoutes = require('./routes/agora');
+const testNotificationRoutes = require('./routes/test-notifications');
 const { generalRateLimit } = require('./middleware/rateLimiter');
 
 const app = express();
@@ -97,6 +98,7 @@ app.use('/api/qr', qrRoutes);
 app.use('/api/calls', callRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/agora', agoraRoutes);
+app.use('/api/test-notifications', testNotificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
