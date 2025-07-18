@@ -229,7 +229,7 @@ class QRCallingApp {
             
             // Join Agora channel (use a simpler UID format)
             const uid = 'user_001'; // Use a simpler UID instead of callId
-            await this.joinAgoraChannel(callData.channelName, callData.token, uid, callData.appId);
+            await this.joinAgoraChannel(callData.channelName, callData.token, callData.callerUID, callData.appId);
             
         } catch (error) {
             console.error('Error initiating call:', error);
@@ -354,7 +354,7 @@ class QRCallingApp {
 
     showManualInput() {
         console.log('ok');
-        this.initiateCall('qr_001');
+        this.initiateCall('cc9837df-c9ee-4ca4-91d6-b46e603d06cc');
     }
 
     showScannerView() {
