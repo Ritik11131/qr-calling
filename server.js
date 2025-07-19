@@ -19,9 +19,7 @@ const io = socketIo(server, {
   cors: {
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"]
-  },
-  transports: ['websocket'], // Only allow websocket transport
-  allowEIO3: true // Allow older clients
+  }
 });
 
 // Middleware
