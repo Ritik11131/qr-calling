@@ -1,0 +1,10 @@
+{
+  "name": "QR Calling Backend Setup for Railway",
+  "steps": [
+    {
+      "step": 1,
+      "title": "Prepare your backend",
+      "description": "Add these files to your backend folder"
+    }
+  ]
+}
