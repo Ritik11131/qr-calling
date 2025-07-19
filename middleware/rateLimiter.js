@@ -5,7 +5,7 @@ const authLimiter = new RateLimiterMemory({
   keyPrefix: 'auth_limiter',
   points: 5, // 5 requests
   duration: 60, // per 60 seconds
-  blockDuration: 60 * 15, // block for 15 minutes
+  blockDuration: 60 * 5, // block for 5 minutes
 });
 
 const generalLimiter = new RateLimiterMemory({
